@@ -172,9 +172,16 @@ var isJumping = false;
 var isLanding = false;
 
 document.addEventListener('keydown', function (e) {
-    if (e.code === 'Space' && isLanding === false) {
+    if (e.code === 'Space' && (isJumping === false && isLanding === false)) {
         isJumping = true;
-        console.log("Jump!");
+        console.log(`Jump! (${e.code})`);
+    }
+});
+
+document.addEventListener('click', function (e) {
+    if ((isJumping === false && isLanding === false)) {
+        isJumping = true;
+        console.log(`Jump! (${e.code})`);
     }
 });
 
