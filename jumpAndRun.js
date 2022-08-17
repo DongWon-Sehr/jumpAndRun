@@ -8,6 +8,7 @@ canvas.height = 300;
 canvas.style.border = "1px solid blue";
 
 const groundPosition = canvas.height - 50;
+
 var dino = {
     width: 50,
     height: 50,
