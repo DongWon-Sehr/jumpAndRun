@@ -14,6 +14,7 @@ var dino = {
     x: 10,
     y: groundPosition,
     draw() {
+        // draw hitbox
         ctx.fillStyle = 'green';
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
@@ -73,9 +74,11 @@ class Obstacle {
     }
 
     draw() {
+        // draw hitbox
         ctx.fillStyle = 'red';
         ctx.fillRect(this.x, this.y, this.width, this.height);
 
+        // draw cover image
         if (this.imgSrc.length > 0) {
             var imgObstacle = new Image();
             imgObstacle.src = this.imgSrc;
