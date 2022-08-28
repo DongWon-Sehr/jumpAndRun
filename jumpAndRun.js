@@ -1,3 +1,4 @@
+import { getWindowFrameRate } from "./modules/getWindowFrameRate.js";
 const scorePanel = document.body.querySelector('#score');
 const replay = document.body.querySelector('#replay');
 const canvas = document.body.querySelector('#canvas');
@@ -48,6 +49,9 @@ var logos = [
 
 function getRandomLogoUrl() {
     var rate = Math.floor(Math.random() * 10);
+    var firstIndex = null;
+    var logoUrl = null;
+
     if (rate < 5) {
         firstIndex = 0;
     } else if (rate >= 5 && rate < 10) {
@@ -58,11 +62,17 @@ function getRandomLogoUrl() {
         firstIndex = 0;
     }
 
-    targetLength = logos[firstIndex].length;
-    var secondIndex = Math.floor(Math.random() * (targetLength - 1));
+    if (firstIndex !== null) {
+        var targetLength = logos[firstIndex].length;
+        var secondIndex = Math.floor(Math.random() * (targetLength - 1));
+    
+        console.log(logos[firstIndex][secondIndex]);
 
-    console.log(logos[firstIndex][secondIndex]);
-    return logos[firstIndex][secondIndex] ?? logos[0][2];
+        logoUrl = logos[firstIndex][secondIndex];
+    }
+
+    if (!logoUrl) logoUrl = logos[0][2];
+    return logoUrl;
 }
 
 class Obstacle {
@@ -96,11 +106,17 @@ var jumpTimer = 0;
 var animation;
 var obstacleSpeed = 3;
 var level = 0;
+var targetFPS = null;
 
 function executeByFrame() {
     animation = requestAnimationFrame(executeByFrame);
     obstacleSpeed = 3 + score / 1000;
     level = Math.floor(obstacleSpeed) - 2;
+
+    getWindowFrameRate( (fps) => { 
+        // console.log(`${fps} FPS`);
+        targetFPS = fps;
+    });
 
     scorePanel.innerHTML = `Score: ${score} / Speed: ${(obstacleSpeed).toFixed(2)} / Level: ${level}`;
 
@@ -113,7 +129,6 @@ function executeByFrame() {
         obstacles.push(obstacle);
         timer = 0;
     }
-
 
     obstacles.forEach((target, index, array) => {
 
@@ -128,12 +143,17 @@ function executeByFrame() {
         target.draw();
     });
 
+    // console.log(`jumpTimer: ${jumpTimer}`);
     if (isJumping === true && isLanding === false) {
         if (dino.y >= ceilingPosition) {
             jumpTimer++;
-            dino.y -= 3;
-            // dino.y -= (3 - jumpTimer/10) ;
+            dino.y -= 5;
+            // if (jumpTimer / 6 <= 3) dino.y -= 3 - jumpTimer / 6;
+            // else dino.y -= 1;
+            console.log("Jumping!");
         } else {
+            console.log("Jumping! End :(");
+            // jumpTimer = 0;
             isJumping = false;
             isLanding = true;
         }
@@ -141,9 +161,13 @@ function executeByFrame() {
 
     if (isJumping === false && isLanding === true) {
         if (dino.y <= groundPosition) {
-            jumpTimer = 0;
-            dino.y += 3;
+            // jumpTimer++;
+            dino.y += 5;
+            // dino.y += 3 - jumpTimer/5;
+            console.log("Landing!");
         } else {
+            console.log("Landing! End :(");
+            // jumpTimer = 0;
             dino.y = groundPosition;
             isLanding = false;
         }
